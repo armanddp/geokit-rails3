@@ -66,8 +66,8 @@ module Geokit
       def adapter
         @adapter ||= begin
 		  if connection.adapter_name.downcase == 'seamless_database_pool'
-			  require File.join(File.dirname(__FILE__), 'adapters', connection.master_connection.class.downcase)
-			  klass = Adapters.const_get(connection.master_connection.class.camelcase)
+			  require File.join(File.dirname(__FILE__), 'adapters', connection.master_connection.class.name.downcase)
+			  klass = Adapters.const_get(connection.master_connection.class.name.camelcase)
 			  klass.load(self) unless klass.loaded
 			  klass.new(self)
 		  else
