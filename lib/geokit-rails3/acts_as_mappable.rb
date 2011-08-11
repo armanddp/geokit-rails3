@@ -65,10 +65,17 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def adapter
         @adapter ||= begin
-          require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
-          klass = Adapters.const_get(connection.adapter_name.camelcase)
-          klass.load(self) unless klass.loaded
-          klass.new(self)
+		  if connection.adapter_name.downcase == 'seamless_database_pool'
+			  require File.join(File.dirname(__FILE__), 'adapters', connection.master_connection.class.downcase)
+			  klass = Adapters.const_get(connection.master_connection.class.camelcase)
+			  klass.load(self) unless klass.loaded
+			  klass.new(self)
+		  else
+			  require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
+			  klass = Adapters.const_get(connection.adapter_name.camelcase)
+			  klass.load(self) unless klass.loaded
+			  klass.new(self)
+		  end
         rescue LoadError
           raise UnsupportedAdapter, "`#{connection.adapter_name.downcase}` is not a supported adapter."
         end
