@@ -180,11 +180,14 @@ module Geokit
     private
       # Override ActiveRecord::Base.relation to return an instance of Geokit::ActsAsMappable::Relation.
       # TODO: Do we need to override JoinDependency#relation too?
-      def relation
-        # NOTE: This cannot be @relation as ActiveRecord already uses this to
-        # cache *its* Relation object
-        @_geokit_relation ||= Relation.new(self, arel_table)
-        finder_needs_type_condition? ? @_geokit_relation.where(type_condition) : @_geokit_relation
+      def relation #:nodoc:
+        relation = Relation.new(self, arel_table)
+
+        if finder_needs_type_condition?
+          relation.where(type_condition).create_with(inheritance_column.to_sym => sti_name)
+        else
+          relation
+        end
       end
 
       # If it's a :within query, add a bounding box to improve performance.
