@@ -170,7 +170,7 @@ module Geokit
           arel = arel.where(distance_conditions) if distance_conditions
 
           if self.through
-            arel = arel.includes(self.through)
+            arel = arel.joins(self.through)
           end
         end
 
