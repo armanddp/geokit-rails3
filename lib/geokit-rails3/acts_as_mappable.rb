@@ -161,6 +161,9 @@ module Geokit
               star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
               arel = arel.select(star_select)
             end
+
+            distance_select = Arel::SqlLiteral.new("#{distance_formula} AS #{distance_column_name}")
+            arel = arel.select(distance_select)
           end
 
           if bounds
